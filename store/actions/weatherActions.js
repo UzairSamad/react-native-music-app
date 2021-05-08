@@ -1,8 +1,11 @@
 /* eslint-disable prettier/prettier */
 import { GET_WEATHER, SET_ERROR } from '../types';
-import { openweathermap_api_key } from '../../config.json';
+// import { openweathermap_api_key } from '../../';
 
-export const getWeather = (city, onSuccess = () => {}, onError = () => {}) => {
+
+
+const openweathermap_api_key = '849338767c0e95025b5559533d26b7c4';
+export const getWeather = (city, onSuccess = () => { }, onError = () => { }) => {
   return async dispatch => {
     try {
       const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${openweathermap_api_key}`);

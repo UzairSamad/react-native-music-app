@@ -1,50 +1,27 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { Text } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
+import Home from './components/Home'
+import Login from './components/Login'
+import SignUp from './components/SignUp'
+import ForgetPassword from './components/ForgetPassword'
+import { NavigationContainer } from '@react-navigation/native';
 
-import { getWeather } from './store/actions/weatherActions';
-import Form from './components/Form';
-import Weather from './components/Weather';
+
 
 const App = () => {
-  const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
-  const { data, error } = useSelector(state => state.weather);
-
-  const searchSubmitHandler = () => {
-    if (search === '') {
-      return Alert.alert('Validation', 'City name is required!', [{ text: 'OK' }]);
-    }
-
-    setLoading(true);
-    dispatch(getWeather(search, () => setLoading(false), () => setLoading(false)));
-    setSearch('');
-    Keyboard.dismiss();
-  };
-
+  const Stack = createStackNavigator();
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={styles.container}>
-        <Form search={search} onSetSearch={setSearch} onSubmit={searchSubmitHandler} />
-        <Weather loading={loading} data={data} error={error} />
-      </View>
-    </TouchableWithoutFeedback>
-  );
-};
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName='Login'>
+        <Stack.Screen name="Home"  component={Home} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="SignUP" component={SignUp} />
+        <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
+      </Stack.Navigator>
+    </NavigationContainer>
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+  );
+}
 
 export default App;
