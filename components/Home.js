@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getWeather } from '../store/actions/weatherActions';
 import Form from './Form';
 import Weather from './Weather';
+import ShareScreen from './ShareScreen';
 
 const Home = () => {
   const [search, setSearch] = useState('');
@@ -36,6 +37,8 @@ const Home = () => {
       <View style={styles.container}>
         <Form search={search} onSetSearch={setSearch} onSubmit={searchSubmitHandler} />
         <Weather loading={loading} data={data} error={error} />
+        {error ? null :
+          data && <ShareScreen />}
       </View>
     </TouchableWithoutFeedback>
   );
