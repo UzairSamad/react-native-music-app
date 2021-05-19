@@ -4,6 +4,12 @@ import { View, Text, StyleSheet, TextInput, Button, TouchableOpacity, ActivityIn
 import { useNavigation } from '@react-navigation/native';
 import { createResource } from '../WebApiServices/SimpleApiCalls'
 import { user_login } from '../WebApiServices/WebServices'
+import {
+  LoginManager,
+  AccessToken,
+  GraphRequest,
+  GraphRequestManager,
+} from 'react-native-fbsdk';
 
 const Login = ({ search, onSetSearch }) => {
   const [email, setEmail] = useState('')
@@ -37,6 +43,51 @@ const Login = ({ search, onSetSearch }) => {
 
   }
 
+
+
+
+  const getInfo = (token) => {
+    const PROFILE_REQUEST_PARAMS = {
+      fields: {
+        string: 'id,name,first_name,last_name',
+      },
+    };
+    const profileRequest = new GraphRequest(
+      '/me',
+      { token, parameters: PROFILE_REQUEST_PARAMS },
+      (error, user) => {
+        if (error) {
+          console.log('login info has error: ' + error);
+        } else {
+          // this.setState({ userInfo: user });
+          navigation.navigate("Home")
+          console.log('resulttttttttttttttt:', user);
+
+        }
+      },
+    );
+    new GraphRequestManager().addRequest(profileRequest).start();
+  }
+
+
+  const loginWithFacebook = async () => {
+    // Attempt login with permissions
+    const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+    console.log(result, "RESSSSSSSSSSSSSSSS");
+    if (result.isCancelled) {
+      throw 'User cancelled the login process';
+    }
+
+    // Once signed in, get the users AccesToken
+    const data = await AccessToken.getCurrentAccessToken();
+    getInfo(data.accessToken)
+    console.log(data, "DAAAAAAAAAAAAAAAAAAa");
+    if (!data) {
+      throw 'Something went wrong obtaining access token';
+    }
+  }
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Login</Text>
@@ -45,6 +96,18 @@ const Login = ({ search, onSetSearch }) => {
         <TextInput style={styles.input} placeholder="Password" secureTextEntry value={search} onChangeText={(val) => setPassword(val)} />
         {!isLoading ? <Button title="Login" onPress={onSubmit} /> : <ActivityIndicator size="large" color="blue" />
         }
+       
+        <View style={{ marginTop: 10, alignItems: "center" }}>
+          <TouchableOpacity
+            onPress={loginWithFacebook}
+            style={{ backgroundColor: "#5890FF", width: 250, borderRadius: 5, paddingHorizontal: 30, paddingVertical: 15 }}>
+            <Text style={{ fontSize: 16, color: "white", textAlign: "center" }}>Login With Facebook</Text>
+          </TouchableOpacity>
+          {/* <TouchableOpacity
+            style={{ marginTop: 30, width: 250, backgroundColor: "#4285f4", borderRadius: 5, paddingHorizontal: 30, paddingVertical: 15 }}>
+            <Text style={{ fontSize: 16, color: "white", textAlign: "center" }}>Login With Gmail</Text>
+          </TouchableOpacity> */}
+        </View>
         <TouchableOpacity onPress={_ => navigation.navigate('SignUP')}>
           <Text style={styles.text}>Dont have an account? Sign Up here</Text>
         </TouchableOpacity>
