@@ -1,9 +1,11 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Button, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Button, TouchableOpacity ,ActivityIndicator} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { createResource } from '../WebApiServices/SimpleApiCalls'
+import { user_register } from '../WebApiServices/WebServices'
 
-const SignUp = ({ search, onSetSearch, onSubmit }) => {
+const SignUp = ({ search, onSetSearch }) => {
   const navigation = useNavigation();
 
   const [firstname, setFirstName] = useState('')
@@ -11,6 +13,31 @@ const SignUp = ({ search, onSetSearch, onSubmit }) => {
   const [password, setPassword] = useState('')
   const [userName, setUserName] = useState('')
   const [email, setEmail] = useState('')
+  const [isLoading, setisLoading] = useState(false)
+
+
+  const onSubmit = async () => {
+    setisLoading(true)
+    let data = {
+      userName: userName,
+      email: email,
+      password: password
+    }
+    try {
+      let res = await createResource(user_register, data);
+      console.log(res, 'resresres');
+      setisLoading(false)
+      navigation.navigate('Login');
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        error.response.data.message,
+      );
+      setisLoading(false)
+      // alert(error);
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Sign Up</Text>
@@ -20,7 +47,8 @@ const SignUp = ({ search, onSetSearch, onSubmit }) => {
         <TextInput style={styles.input} placeholder="User Name" value={userName} onChangeText={(val) => setUserName(val)} />
         <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={(val) => setEmail(val)} />
         <TextInput style={styles.input} placeholder="Password" secureTextEntry value={password} onChangeText={(val) => setPassword(val)} />
-        <Button title="Sign Up" onPress={onSubmit} />
+        {!isLoading ? <Button title="Sign Up" onPress={onSubmit} /> : <ActivityIndicator size="large" color="blue" />
+        }
         <TouchableOpacity onPress={_ => navigation.navigate('Login')}>
           <Text style={styles.text}  >Already have an account?? Back to Login</Text>
         </TouchableOpacity>
